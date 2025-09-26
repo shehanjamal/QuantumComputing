@@ -1,45 +1,45 @@
 import numpy as np
 
-def create_matrix(num_inputs, num_outputs, out_for_0, out_for_1):
-    """
-    Build a transformation matrix for a custom logic gate.
-    
-    Args:
-        num_inputs (int): number of input qubits
-        num_outputs (int): number of output qubits
-        out_for_0 (int): output when input is 0
-        out_for_1 (int): output when input is 1
-    """
-    # Total possible states
-    input_states = 2 ** num_inputs
-    output_states = 2 ** num_outputs
-    
-    # Initialize matrix with zeros
-    matrix = np.zeros((output_states, input_states), dtype=int)
-    
-    # For each input state, assign the mapping
-    for i in range(input_states):
-        # Decide what the output is based on the "last bit"
-        last_bit = i % 2
-        if last_bit == 0:
-            out = out_for_0
-        else:
-            out = out_for_1
-        
-        # Place 1 at the appropriate location in the matrix
-        if out < output_states:
-            matrix[out, i] = 1
-    
-    return matrix
+def create_Uf():
+    # Step 1: Get number of input bits
+    n = int(input("Enter number of input bits (e.g. 2, 3, 4): "))
+    m = int(input("Enter number of output bits: "))
+
+    # Step 2: Matrix size
+    total_qubits = n + m
+    dim = 2 ** total_qubits
+    Uf = np.zeros((dim, dim), dtype=int)
+
+    # Step 3: Ask for mapping
+    mapping = {}
+    for i in range(2**n):
+        x = format(i, f'0{n}b')  
+        fx = input(f"Enter output for input {x} (as {m}-bit string): ")
+        mapping[x] = fx
+
+    # Step 4: Construct Uf
+    for x_int in range(2**n):
+        x_bits = format(x_int, f'0{n}b')
+
+        for y_int in range(2**m):
+            y_bits = format(y_int, f'0{m}b')
+
+            fx_bits = mapping[x_bits]
+            new_y = int(y_bits, 2) ^ int(fx_bits, 2)
+
+
+            in_state = (x_int << m) | y_int
+            out_state = (x_int << m) | new_y
+
+            Uf[out_state, in_state] = 1
+
+    return Uf
+
+
 
 
 def main():
-    num_inputs = int(input("Enter number of inputs: "))
-    num_outputs = int(input("Enter number of outputs: "))
-    out_for_0 = int(input("When input is 0, what should the output be? "))
-    out_for_1 = int(input("When input is 1, what should the output be? "))
-
-    matrix = create_matrix(num_inputs, num_outputs, out_for_0, out_for_1)
+    matrix = create_Uf()
     print("Transformation Matrix:")
     print(matrix)
 
